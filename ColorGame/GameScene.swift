@@ -25,12 +25,17 @@ class GameScene: SKScene {
     
     
     func createPlayer() {
+        
         player = SKSpriteNode(imageNamed: "player")
         guard let playerPosition = tracksArray?.first?.position.x else {
             return
         }
         player?.position = CGPoint(x: playerPosition, y: self.size.height / 2)
         self.addChild(player!)
+        
+        let pulse = SKEmitterNode(fileNamed: "pulse")!
+        player?.addChild(pulse)
+        pulse.position = CGPoint(x: 0, y: 0)
     }
     
     func setupTracks() {
