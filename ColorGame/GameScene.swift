@@ -9,6 +9,12 @@
 import SpriteKit
 import GameplayKit
 
+enum Enemies {
+    case small
+    case medium
+    case large
+}
+
 class GameScene: SKScene {
     
     var tracksArray : [SKSpriteNode]? = [SKSpriteNode]()
@@ -21,6 +27,8 @@ class GameScene: SKScene {
     override func didMove(to view: SKView) {
         setupTracks()
         createPlayer()
+        self.addChild(createEnemy(type: .large, forTrack: 3)!)
+        
     }
     
     
@@ -36,6 +44,36 @@ class GameScene: SKScene {
         let pulse = SKEmitterNode(fileNamed: "pulse")!
         player?.addChild(pulse)
         pulse.position = CGPoint(x: 0, y: 0)
+    }
+    
+    
+    func createEnemy(type : Enemies , forTrack track : Int) -> SKShapeNode? {
+        
+        // Create a SKShapeNode()
+        let enemyStrite = SKShapeNode()
+        
+        switch(type) {
+            case .small:
+                enemyStrite.path = CGPath(roundedRect: CGRect(x : -10 , y : 0 , width : 20 , height : 70), cornerWidth: 8, cornerHeight: 8, transform: nil)
+                enemyStrite.fillColor = UIColor(red: 0.4431, green: 0.5529, blue: 0.7451, alpha: 1)
+            
+            case .medium:
+                enemyStrite.path = CGPath(roundedRect: CGRect(x : -10 , y : 0 , width : 20 , height : 100), cornerWidth: 8, cornerHeight: 8, transform: nil)
+                enemyStrite.fillColor = UIColor(red: 0.7804, green: 0.4039, blue: 0.4039, alpha: 1)
+            case .large:
+                enemyStrite.path = CGPath(roundedRect: CGRect(x : -10 , y : 0 , width : 20 , height : 130), cornerWidth: 8, cornerHeight: 8, transform: nil)
+                enemyStrite.fillColor = UIColor(red: 0.7804, green: 0.6392, blue: 0.4039, alpha: 1)
+        }
+        
+        // check track is available or not
+        guard let enemyPosition = tracksArray?[track].position else {
+            return nil
+        }
+        // set the enemy position
+        enemyStrite.position.x = enemyPosition.x
+        enemyStrite.position.y = 50
+        
+        return enemyStrite
     }
     
     func setupTracks() {
