@@ -17,24 +17,32 @@ enum Enemies : Int {
 
 class GameScene: SKScene , SKPhysicsContactDelegate {
     
+    // MARK : Arrays
     var tracksArray : [SKSpriteNode]? = [SKSpriteNode]()
-    var player : SKSpriteNode?
-    var targer : SKSpriteNode?
-    
-    var currentTrack = 0
-    var movingToTrack = false
-    let moveSound = SKAction.playSoundFileNamed("move.wav", waitForCompletion: false)
-    
-    
     let trackVelocities = [180,200,250]
     var directionArray  = [Bool]()
     var velocityArray   = [Int]()
     
+    // MARK : SpriteNodes
+    var player : SKSpriteNode?
+    var targer : SKSpriteNode?
+    
+    // MARK : Variables
+    var currentTrack = 0
+    var movingToTrack = false
+    
+    // MARK : Sound
+    let moveSound = SKAction.playSoundFileNamed("move.wav", waitForCompletion: false)
+    
+    
+    
+    // MARK : category of sprites
     let playerCategory : UInt32 = 0x1 << 0 // 1
     let enemyCategory  : UInt32 = 0x1 << 1 // 2
     let targetCategory : UInt32 = 0x1 << 2 // 4
     
     
+    // MARK : Entry point
     override func didMove(to view: SKView) {
         setupTracks()
         createPlayer()
@@ -55,7 +63,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         
     }
     
-    
+    // MARK : Create player
     func createPlayer() {
         
         player = SKSpriteNode(imageNamed: "player")
@@ -77,6 +85,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         pulse.position = CGPoint(x: 0, y: 0)
     }
     
+    // MARK : Create Target
     func createTarget() {
         targer = self.childNode(withName: "target") as? SKSpriteNode
         targer?.physicsBody = SKPhysicsBody(circleOfRadius: targer!.size.width / 2)
@@ -84,6 +93,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         targer?.physicsBody?.collisionBitMask = 0
     }
     
+    // MARK : Create Enemy
     func createEnemy(type : Enemies , forTrack track : Int) -> SKShapeNode? {
         
         // Create a SKShapeNode()
@@ -140,6 +150,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         }
     }
     
+    // MARK  : setup tracks
     func setupTracks() {
         for i in 0...8 {
             if let tracks = self.childNode(withName: "\(i)") as? SKSpriteNode {
@@ -148,12 +159,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         }
     }
     
-    
-    
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-    }
-    
+    // MARK : Move vertically
     func moveVertically(up : Bool) {
         if up {
             let moveAction = SKAction.moveBy(x: 0, y: 10, duration: 0.01)
@@ -166,19 +172,39 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         }
     }
     
-    
+    // MARK : Go to next track
     func moveToNextTrack() {
         player?.removeAllActions()
         movingToTrack = true
+        let nextTrack : CGPoint
         
-        guard let nextTrack = tracksArray?[currentTrack + 1].position else {
+//        guard let nextTrack = tracksArray?[currentTrack + 1].position else {
+//            return
+//        }
+        
+        if currentTrack < 8 {
+            nextTrack = (tracksArray?[currentTrack + 1].position)!
+        }
+        else {
             return
         }
         
         if let player = self.player {
             let moveAction = SKAction.move(to: CGPoint(x : nextTrack.x, y : player.position.y), duration: 0.2)
+            let up = directionArray[currentTrack + 1]
+            
             player.run(moveAction, completion: {
                 self.movingToTrack = false
+                
+                if self.currentTrack != 8 {
+                    self.player?.physicsBody?.velocity = up ? CGVector(dx: 0, dy: self.velocityArray[self.currentTrack]) : CGVector(dx: 0, dy: -self.velocityArray[self.currentTrack])
+                }
+                else {
+                    self.player?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                }
+                
+                
+                
             })
    
             currentTrack += 1
@@ -186,6 +212,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         }
     }
     
+    // MARK : Touch control
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch  = touches.first {
             let location = touch.previousLocation(in: self)
@@ -201,17 +228,20 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         }
     }
     
+    // MARK : Touch ended
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if !movingToTrack {
             player?.removeAllActions()
         }
     }
     
+    // MARK : Touch Cancel
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         player?.removeAllActions()
     }
     
     
+    // MARK : Handle Contact b/w body
     func didBegin(_ contact: SKPhysicsContact) {
         var playerBody : SKPhysicsBody
         var otherBody : SKPhysicsBody
@@ -226,16 +256,41 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         }
         
         if playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == enemyCategory {
-            print("Enemy hit")
+            movePlayerToStart()
         }
         else if (playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == targetCategory) {
-            print("Hit target")
+            nextLavel(playerPhysicsBody: playerBody)
         }
-        
-        
+    }
+    
+    func nextLavel(playerPhysicsBody : SKPhysicsBody) {
+        let emitter = SKEffectNode(fileNamed: "fireworks.sks")
+        playerPhysicsBody.node?.addChild(emitter!)
+        self.run(SKAction.wait(forDuration: 0.2)) {
+            emitter?.removeFromParent()
+            self.movePlayerToStart()
+        }
     }
     
     
+    func movePlayerToStart() {
+        if let player = self.player {
+            player.removeFromParent()
+            self.player = nil
+            self.createPlayer()
+            self.currentTrack = 0
+        }
+    }
+    
+    
+    // MARK : - update
+    override func update(_ currentTime: TimeInterval) {
+        if let player = self.player {
+            if player.position.y > self.size.height || player.position.y < 0 {
+                movePlayerToStart()
+            }
+        }
+    }
     
     
     
