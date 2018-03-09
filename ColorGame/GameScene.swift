@@ -22,12 +22,23 @@ class GameScene: SKScene {
     var currentTrack = 0
     var movingToTrack = false
     let moveSound = SKAction.playSoundFileNamed("move.wav", waitForCompletion: false)
+    let trackVelocities = [180,200,250]
+    var directionArray = [Bool]()
+    var velocityArray = [Int]()
     
     
     override func didMove(to view: SKView) {
         setupTracks()
         createPlayer()
-        self.addChild(createEnemy(type: .large, forTrack: 3)!)
+        // self.addChild(createEnemy(type: .large, forTrack: 3)!)
+        
+        if let numberOfTracks = tracksArray?.count {
+            for _ in 0...numberOfTracks {
+                let randomNumberForVelocity = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
+                velocityArray.append(trackVelocities[randomNumberForVelocity])
+                directionArray.append(GKRandomSource.sharedRandom().nextBool())
+            }
+        }
         
     }
     
@@ -69,9 +80,17 @@ class GameScene: SKScene {
         guard let enemyPosition = tracksArray?[track].position else {
             return nil
         }
+        
+        // get the direction
+        let up = directionArray[track]
+        
         // set the enemy position
         enemyStrite.position.x = enemyPosition.x
-        enemyStrite.position.y = 50
+        enemyStrite.position.y = up ? -130 : self.size.height + 130
+        
+        // Add physics body property to detect collision or other stuff
+        enemyStrite.physicsBody = SKPhysicsBody(edgeLoopFrom: enemyStrite.path!)
+        enemyStrite.physicsBody?.velocity = up ? CGVector(dx: 0, dy: velocityArray[track]) : CGVector(dx: 0, dy: -velocityArray[track])
         
         return enemyStrite
     }
