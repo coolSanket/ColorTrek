@@ -23,13 +23,27 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     var directionArray  = [Bool]()
     var velocityArray   = [Int]()
     
-    // MARK : SpriteNodes
-    var player : SKSpriteNode?
-    var targer : SKSpriteNode?
+    // MARK : Nodes
+    var player     : SKSpriteNode?
+    var targer     : SKSpriteNode?
+    var timeLabel  : SKLabelNode?
+    var scoreLabel : SKLabelNode?
     
     // MARK : Variables
-    var currentTrack = 0
-    var movingToTrack = false
+    var currentTrack       = 0
+    var movingToTrack      = false
+    var remainingTime : TimeInterval = 60 {
+        didSet {
+            timeLabel?.text = "TIME: \(Int(self.remainingTime))"
+        }
+    }
+    var currentScore : Int = 0  {
+        didSet {
+            scoreLabel?.text = "SCORE: \(self.currentScore)"
+        }
+    }
+    
+    
     
     // MARK : Sound
     let moveSound = SKAction.playSoundFileNamed("move.wav", waitForCompletion: false)
@@ -46,8 +60,11 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     // MARK : Entry point
     override func didMove(to view: SKView) {
         setupTracks()
+        createLabel()
+        launchGameTimer()
         createPlayer()
         createTarget()
+        
         
         self.physicsWorld.contactDelegate = self
         
@@ -272,6 +289,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     }
     
     func nextLavel(playerPhysicsBody : SKPhysicsBody) {
+        self.currentScore += 1
         self.run(SKAction.playSoundFileNamed("levelUp.wav", waitForCompletion: true))
         
         let emitter = SKEffectNode(fileNamed: "fireworks.sks")
@@ -301,6 +319,27 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
                 movePlayerToStart()
             }
         }
+        if remainingTime <= 5 {
+            timeLabel?.fontColor = UIColor.red
+        }
+        
+    }
+    
+    
+    // MARK : - Create Label
+    func createLabel() {
+        timeLabel = childNode(withName: "time") as? SKLabelNode
+        scoreLabel = childNode(withName: "score") as? SKLabelNode
+        remainingTime = 60
+        currentScore = 0
+    }
+    
+    
+    func launchGameTimer() {
+        let timeAction = SKAction.repeatForever(SKAction.sequence([SKAction.run({
+            self.remainingTime -= 1
+        }),SKAction.wait(forDuration: 1)]))
+        self.timeLabel?.run(timeAction)
     }
     
     
