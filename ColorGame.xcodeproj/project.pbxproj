@@ -78,16 +78,13 @@
 		2F9B32EB2051946A00F2DC62 /* ColorGame */ = {
 			isa = PBXGroup;
 			children = (
+				2F9B33242053F1A500F2DC62 /* Game Scenes */,
 				2F9B32EC2051946A00F2DC62 /* AppDelegate.swift */,
-				2F9B32EE2051946A00F2DC62 /* GameScene.sks */,
 				2F9B32F02051946A00F2DC62 /* Actions.sks */,
-				2F9B33102051B5A600F2DC62 /* fireworks.sks */,
-				2F9B33142051B65D00F2DC62 /* pulse.sks */,
+				2F9B33252053F22800F2DC62 /* Particles */,
 				2F9B32F22051946A00F2DC62 /* GameScene.swift */,
 				2F9B32F42051946A00F2DC62 /* GameViewController.swift */,
-				2F9B331B2053CC9600F2DC62 /* GameOverScene.sks */,
 				2F9B33182053CC9500F2DC62 /* GameOverScene.swift */,
-				2F9B33192053CC9500F2DC62 /* StartScene.sks */,
 				2F9B331A2053CC9600F2DC62 /* StartScene.swift */,
 				2F9B33202053D0AD00F2DC62 /* ScrollingBackground.swift */,
 				2F9B33222053E93300F2DC62 /* GameHandler.swift */,
@@ -98,6 +95,25 @@
 				2F9B32FE2051946A00F2DC62 /* Info.plist */,
 			);
 			path = ColorGame;
+			sourceTree = "<group>";
+		};
+		2F9B33242053F1A500F2DC62 /* Game Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				2F9B32EE2051946A00F2DC62 /* GameScene.sks */,
+				2F9B331B2053CC9600F2DC62 /* GameOverScene.sks */,
+				2F9B33192053CC9500F2DC62 /* StartScene.sks */,
+			);
+			path = "Game Scenes";
+			sourceTree = "<group>";
+		};
+		2F9B33252053F22800F2DC62 /* Particles */ = {
+			isa = PBXGroup;
+			children = (
+				2F9B33102051B5A600F2DC62 /* fireworks.sks */,
+				2F9B33142051B65D00F2DC62 /* pulse.sks */,
+			);
+			path = Particles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
