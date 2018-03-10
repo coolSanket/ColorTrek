@@ -52,9 +52,10 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     
     
     // MARK : category of sprites
-    let playerCategory : UInt32 = 0x1 << 0 // 1
-    let enemyCategory  : UInt32 = 0x1 << 1 // 2
-    let targetCategory : UInt32 = 0x1 << 2 // 4
+    let playerCategory  : UInt32 = 0x1 << 0 // 1
+    let enemyCategory   : UInt32 = 0x1 << 1 // 2
+    let targetCategory  : UInt32 = 0x1 << 2 // 4
+    let powerUpCategory : UInt32 = 0x1 << 3 // 8
     
     
     // MARK : Entry point
@@ -95,7 +96,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         player?.physicsBody?.linearDamping = 0
         player?.physicsBody?.categoryBitMask = playerCategory
         player?.physicsBody?.collisionBitMask = 0
-        player?.physicsBody?.contactTestBitMask = enemyCategory | targetCategory
+        player?.physicsBody?.contactTestBitMask = enemyCategory | targetCategory | powerUpCategory
         
         
         guard let playerPosition = tracksArray?.first?.position.x else {
@@ -160,10 +161,23 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     
     
     func spawnEnemies() {
+        
+        var randomTrackNumber = 0
+        let createPowerUp = GKRandomSource.sharedRandom().nextBool()
+        
+        if createPowerUp {
+            randomTrackNumber = GKRandomSource.sharedRandom().nextInt(upperBound: 6) + 1
+            if let powerUPObject = self.createPowerUp(forTrack: randomTrackNumber) {
+                self.addChild(powerUPObject)
+            }
+        }
+    
         for i in 1...7 {
-            let randomEnemyType = Enemies(rawValue: GKRandomSource.sharedRandom().nextInt(upperBound: 3))!
-            if let newEnemy = createEnemy(type: randomEnemyType, forTrack: i) {
-                self.addChild(newEnemy)
+            if randomTrackNumber != i {
+                let randomEnemyType = Enemies(rawValue: GKRandomSource.sharedRandom().nextInt(upperBound: 3))!
+                if let newEnemy = createEnemy(type: randomEnemyType, forTrack: i) {
+                    self.addChild(newEnemy)
+                }
             }
         }
         
@@ -286,6 +300,11 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         else if (playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == targetCategory) {
             nextLavel(playerPhysicsBody: playerBody)
         }
+        else if playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == powerUpCategory {
+            self.run(SKAction.playSoundFileNamed("powerUp.wav", waitForCompletion: true))
+            otherBody.node?.removeFromParent()
+            remainingTime += 5
+        }
     }
     
     func nextLavel(playerPhysicsBody : SKPhysicsBody) {
@@ -308,6 +327,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
             self.player = nil
             self.createPlayer()
             self.currentTrack = 0
+            remainingTime = 60
         }
     }
     
@@ -340,6 +360,30 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
             self.remainingTime -= 1
         }),SKAction.wait(forDuration: 1)]))
         self.timeLabel?.run(timeAction)
+    }
+    
+    
+    func createPowerUp(forTrack track : Int) -> SKSpriteNode? {
+        
+        let powerUpSprite = SKSpriteNode(imageNamed: "powerUp")
+        powerUpSprite.name = "ENEMY"
+        
+        powerUpSprite.physicsBody = SKPhysicsBody(circleOfRadius: powerUpSprite.size.width / 2)
+        powerUpSprite.physicsBody?.linearDamping = 0;
+        powerUpSprite.physicsBody?.categoryBitMask = powerUpCategory
+        powerUpSprite.physicsBody?.collisionBitMask = 0
+        
+        let up = directionArray[track]
+        
+        guard let powerUpXPosition = tracksArray?[track].position.x else {
+            return nil
+        }
+        
+        powerUpSprite.position.x = powerUpXPosition
+        powerUpSprite.position.y = up ? -130 : self.size.height + 130
+        powerUpSprite.physicsBody?.velocity = up ? CGVector(dx: 0, dy: velocityArray[track]) : CGVector(dx: 0, dy: -velocityArray[track])
+        
+        return powerUpSprite
     }
     
     
