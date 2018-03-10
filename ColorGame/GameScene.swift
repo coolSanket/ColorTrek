@@ -26,8 +26,11 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     // MARK : Nodes
     var player     : SKSpriteNode?
     var targer     : SKSpriteNode?
+    
+     // MARK : - Label & Pause
     var timeLabel  : SKLabelNode?
     var scoreLabel : SKLabelNode?
+    var pause      : SKSpriteNode?
     
     // MARK : Variables
     var currentTrack       = 0
@@ -40,6 +43,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     var currentScore : Int = 0  {
         didSet {
             scoreLabel?.text = "SCORE: \(self.currentScore)"
+            GameHandler.sharedInstnace.score = currentScore
         }
     }
     
@@ -214,18 +218,12 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     func moveToNextTrack() {
         player?.removeAllActions()
         movingToTrack = true
-        let nextTrack : CGPoint
+      
         
-//        guard let nextTrack = tracksArray?[currentTrack + 1].position else {
-//            return
-//        }
-        
-        if currentTrack < 8 {
-            nextTrack = (tracksArray?[currentTrack + 1].position)!
-        }
-        else {
+        guard let nextTrack = tracksArray?[currentTrack + 1].position else {
             return
         }
+    
         
         if let player = self.player {
             let moveAction = SKAction.move(to: CGPoint(x : nextTrack.x, y : player.position.y), duration: 0.2)
@@ -257,11 +255,21 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
             let node = self.nodes(at: location).first
             
             if node?.name == "right" {
-                moveToNextTrack()
+                if currentTrack < 8 {
+                    moveToNextTrack()
+                }
             }else if node?.name == "up" {
                 moveVertically(up: true)
             }else if node?.name == "down" {
                 moveVertically(up: false)
+            }
+            else if node?.name == "pause" , let scene = self.scene {
+                if scene.isPaused  {
+                    scene.isPaused = false
+                }
+                else  {
+                    scene.isPaused = true
+                }
             }
         }
     }
@@ -327,7 +335,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
             self.player = nil
             self.createPlayer()
             self.currentTrack = 0
-            remainingTime = 60
+            // remainingTime = 60
         }
     }
     
@@ -342,6 +350,9 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
         if remainingTime <= 5 {
             timeLabel?.fontColor = UIColor.red
         }
+        if remainingTime == 0 {
+            gameOver()
+        }
         
     }
     
@@ -350,6 +361,7 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     func createLabel() {
         timeLabel = childNode(withName: "time") as? SKLabelNode
         scoreLabel = childNode(withName: "score") as? SKLabelNode
+        pause = childNode(withName: "pause") as? SKSpriteNode
         remainingTime = 60
         currentScore = 0
     }
@@ -387,6 +399,17 @@ class GameScene: SKScene , SKPhysicsContactDelegate {
     }
     
     
+    func gameOver()  {
+        
+        GameHandler.sharedInstnace.saveGameStats()
+        self.run(SKAction.playSoundFileNamed("levelCompleted.wav", waitForCompletion: true))
+        let transition = SKTransition.fade(withDuration: 1)
+        if let gameOverScene = SKScene(fileNamed: "GameOverScene") {
+            gameOverScene.scaleMode = .aspectFit
+            self.view?.presentScene(gameOverScene, transition: transition)
+        }
+        
+    }
     
     
     

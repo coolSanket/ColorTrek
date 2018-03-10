@@ -23,6 +23,7 @@
 		2F9B331E2053CC9600F2DC62 /* StartScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9B331A2053CC9600F2DC62 /* StartScene.swift */; };
 		2F9B331F2053CC9600F2DC62 /* GameOverScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2F9B331B2053CC9600F2DC62 /* GameOverScene.sks */; };
 		2F9B33212053D0AD00F2DC62 /* ScrollingBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9B33202053D0AD00F2DC62 /* ScrollingBackground.swift */; };
+		2F9B33232053E93300F2DC62 /* GameHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9B33222053E93300F2DC62 /* GameHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		2F9B331A2053CC9600F2DC62 /* StartScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartScene.swift; sourceTree = "<group>"; };
 		2F9B331B2053CC9600F2DC62 /* GameOverScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameOverScene.sks; sourceTree = "<group>"; };
 		2F9B33202053D0AD00F2DC62 /* ScrollingBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingBackground.swift; sourceTree = "<group>"; };
+		2F9B33222053E93300F2DC62 /* GameHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +90,7 @@
 				2F9B33192053CC9500F2DC62 /* StartScene.sks */,
 				2F9B331A2053CC9600F2DC62 /* StartScene.swift */,
 				2F9B33202053D0AD00F2DC62 /* ScrollingBackground.swift */,
+				2F9B33222053E93300F2DC62 /* GameHandler.swift */,
 				2F9B32F62051946A00F2DC62 /* Main.storyboard */,
 				2F9B33042051959700F2DC62 /* Sounds */,
 				2F9B32F92051946A00F2DC62 /* Assets.xcassets */,
@@ -179,6 +182,7 @@
 				2F9B32F32051946A00F2DC62 /* GameScene.swift in Sources */,
 				2F9B32F52051946A00F2DC62 /* GameViewController.swift in Sources */,
 				2F9B331C2053CC9600F2DC62 /* GameOverScene.swift in Sources */,
+				2F9B33232053E93300F2DC62 /* GameHandler.swift in Sources */,
 				2F9B33212053D0AD00F2DC62 /* ScrollingBackground.swift in Sources */,
 				2F9B331E2053CC9600F2DC62 /* StartScene.swift in Sources */,
 				2F9B32ED2051946A00F2DC62 /* AppDelegate.swift in Sources */,

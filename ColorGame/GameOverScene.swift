@@ -20,6 +20,10 @@ class GameOverScene : SKScene {
     override func didMove(to view: SKView) {
         lastScoreLabel = self.childNode(withName: "lastScoreLabel") as? SKLabelNode
         bestScoreLabel = self.childNode(withName: "bestScoreLabel") as? SKLabelNode
+        
+        
+        lastScoreLabel?.text = "\(GameHandler.sharedInstnace.score)"
+        bestScoreLabel?.text = "\(GameHandler.sharedInstnace.highScore)"
     
         
         playButton = self.childNode(withName: "startButton") as? SKSpriteNode
@@ -30,6 +34,8 @@ class GameOverScene : SKScene {
         }
         
         
+        
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -38,7 +44,11 @@ class GameOverScene : SKScene {
             let node = self.atPoint(pos)
             
             if node == playButton {
-            
+                let transition = SKTransition.fade(withDuration: 1)
+                if let gameScene = SKScene(fileNamed: "GameScene") {
+                    gameScene.scaleMode = .aspectFit
+                    self.view?.presentScene(gameScene, transition: transition)
+                }
             }
         }
     }
